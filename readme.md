@@ -3,5 +3,5 @@
 To execute the code, run the following command in Octave or Matlab (only tested in Octave):
 
 ```octave
-sim(1)
+dataSimulation(1)
 ```
