@@ -14,6 +14,14 @@ X_estimated = nan(size(mX0, 1), N);
 
 % Boucle principale de simulation et mise à jour du filtre de Kalman
 for k = 2:N
+    %data treatment 
+    z = Z(:, k+1);
+    z = z(any(~isnan(z),2));
+    H = arrayH(:, :, k+1);
+    H = H(any(~isnan(H),2));
+    R = arrayR(:, :, k+1);
+    R = R(any(~isnan(R),2));
+
     % Utilisez le filtre de Kalman pour estimer l'état du système
     mX_pred = F * mX_est + B;
     PX_pred = F * PX_est * F' + Qw;
@@ -26,7 +34,8 @@ for k = 2:N
         PX_est = (eye(size(PX0)) - K * H_kalman) * PX_pred;
     else
         % Aucune mesure disponible, utilisez uniquement le modèle dynamique
-        mX_est = mX_pred;
+        mX_est = mX_pred + K(z-H * mX_pred);
+        K = PX_pred * H' / (H * PX_pred * H' + R)^-1;
         PX_est = PX_pred;
     end
 
